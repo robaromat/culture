@@ -1,0 +1,42 @@
+/* Palette « chaleureuse » validée sur maquette : papier, encre brune, accent bordeaux (toile de reliure).
+   Le thème suit le téléphone (prefers-color-scheme) ; data-theme permet de forcer clair/sombre. */
+:root {
+  --bg: #EDE5D7;
+  --surface: #F7F2E9;
+  --raised: #FFFCF6;
+  --ink: #2B221B;
+  --muted: #776757;
+  --line: #D8CBB7;
+  --accent: #74303A;
+  --accent-ink: #FBF3EA;
+  --accent-soft: #E8D3CC;
+  --gold: #A9771F;
+  --ok: #3F6B4A;
+  --warn: #A36A12;
+  --err: #A4362B;
+  --shadow: 0 1px 0 rgba(60, 40, 20, .06), 0 8px 24px -12px rgba(60, 40, 20, .25);
+
+  --f-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --f-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #19140F; --surface: #221B15; --raised: #2A221B; --ink: #EEE4D4; --muted: #A69580; --line: #3A3028;
+    --accent: #D9939A; --accent-ink: #2A1316; --accent-soft: #3D262A; --gold: #DDAE58;
+    --ok: #8CC09A; --warn: #E0A64A; --err: #E5867B;
+    --shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 10px 28px -14px rgba(0, 0, 0, .7);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #19140F; --surface: #221B15; --raised: #2A221B; --ink: #EEE4D4; --muted: #A69580; --line: #3A3028;
+  --accent: #D9939A; --accent-ink: #2A1316; --accent-soft: #3D262A; --gold: #DDAE58;
+  --ok: #8CC09A; --warn: #E0A64A; --err: #E5867B;
+  --shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 10px 28px -14px rgba(0, 0, 0, .7);
+  color-scheme: dark;
+}
