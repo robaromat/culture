@@ -39,5 +39,5 @@ npm run build     # vérification des types + build dans dist/
 2. ✅ Réglages + stockage GitHub + cache local (synchro testée : `npm test`)
 3. ✅ Fiches et tags, liste avec filtres
 4. ✅ Remplissage automatique (Open Library, TMDB + disponibilité, Spotify lien collé et recherche)
-5. PWA hors connexion
+5. ✅ App installable et hors connexion (manifeste, icônes, service worker)
 6. Finitions et tests sur téléphone

@@ -1,0 +1,23 @@
+{
+  "id": "/culture/",
+  "name": "Culture",
+  "short_name": "Culture",
+  "description": "Mes livres, films, séries, musiques et podcasts à découvrir.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "/culture/#/",
+  "scope": "/culture/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#EDE5D7",
+  "theme_color": "#74303A",
+  "categories": ["books", "entertainment", "lifestyle"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Ajouter", "short_name": "Ajouter", "url": "/culture/#/ajouter", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

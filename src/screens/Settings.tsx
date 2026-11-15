@@ -9,6 +9,7 @@ import { parseDataFile } from '../model/validate';
 import type { DataFile } from '../model/types';
 import { relativeTime } from '../lib/time';
 import { hrefOf } from '../router';
+import { installPrompt, isStandalone } from '../pwa';
 import { disconnectSpotify, redirectUri as spotifyRedirectUri, spotifyConnected, startSpotifyLogin } from '../providers/spotify';
 
 type Test = null | { state: 'wait' } | { state: 'ok'; text: string } | { state: 'err'; text: string };
@@ -300,6 +301,36 @@ export function SettingsScreen() {
                   </button>
                 </div>
               </div>
+            )}
+          </section>
+
+          <section class="card">
+            <h2>
+              <Icon name="download" />
+              Application
+            </h2>
+            {isStandalone() ? (
+              <p class="testres ok"><Icon name="check" />Culture est installée sur cet appareil et fonctionne hors connexion.</p>
+            ) : installPrompt.value ? (
+              <div>
+                <button
+                  class="btn small primary"
+                  onClick={async () => {
+                    const p = installPrompt.value;
+                    if (!p) return;
+                    await p.prompt();
+                    await p.userChoice;
+                    installPrompt.value = null;
+                  }}
+                >
+                  <Icon name="download" />Installer Culture sur cet appareil
+                </button>
+              </div>
+            ) : (
+              <p class="small">
+                Pour l'avoir comme une app (icône, plein écran, hors connexion) : sur Android, menu ⋮ de Chrome → « Installer l'application » ou
+                « Ajouter à l'écran d'accueil » ; sur iPhone, Safari → Partager → « Sur l'écran d'accueil ».
+              </p>
             )}
           </section>
 

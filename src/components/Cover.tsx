@@ -27,7 +27,8 @@ export function Cover({ category, title, creator, cover }: Props) {
   if (src && !failed) {
     return (
       <div class={`cover k-${category} has-img`} aria-hidden="true">
-        <img src={src} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onError={() => setFailed(true)} />
+        {/* crossorigin : réponses CORS (et non « opaques ») que le service worker peut garder hors connexion sans gonfler le stockage */}
+        <img src={src} alt="" loading="lazy" decoding="async" crossorigin="anonymous" referrerpolicy="no-referrer" onError={() => setFailed(true)} />
       </div>
     );
   }

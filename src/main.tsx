@@ -4,6 +4,9 @@ import './styles/base.css';
 import { App } from './app';
 import { completeSpotifyLogin } from './providers/spotify';
 import { showToast } from './state/ui';
+import { setupPwa } from './pwa';
+
+setupPwa();
 
 // Retour de la page de connexion Spotify (?code=…) : on termine la connexion avant d'afficher l'app.
 async function boot() {

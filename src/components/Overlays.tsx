@@ -3,6 +3,7 @@ import { Icon } from './Icon';
 import { engine } from '../sync/store';
 import { SORT_LABELS, type SortKey } from '../model/filter';
 import { fTags, sheet, sortKey, toast, toggleTagFilter } from '../state/ui';
+import { applyUpdate, updateReady } from '../pwa';
 
 /** Panneaux du bas (téléphone) / boîtes centrées (grand écran) pour les tags et le tri. */
 export function Sheet() {
@@ -51,6 +52,17 @@ export function Sheet() {
         )}
       </div>
     </>
+  );
+}
+
+/** Bandeau discret quand une nouvelle version de l'app est prête. */
+export function UpdateBanner() {
+  if (!updateReady.value) return null;
+  return (
+    <div class="update" role="status">
+      <span>Nouvelle version de Culture disponible.</span>
+      <button class="btn small primary" onClick={applyUpdate}><Icon name="refresh" />Mettre à jour</button>
+    </div>
   );
 }
 

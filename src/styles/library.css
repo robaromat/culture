@@ -273,3 +273,6 @@ details.more .inner { display: flex; flex-direction: column; gap: 16px; padding-
 .res-group svg.i { width: 15px; height: 15px; }
 .manual .row-manual { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; }
 .chips.flat { padding: 0; }
+
+/* ---------- Mise à jour disponible ---------- */
+.update { position: absolute; left: 50%; top: calc(10px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 40; display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 14px; border-radius: 12px; background: var(--raised); border: 1px solid var(--line); box-shadow: var(--shadow); font-size: 13.5px; width: max-content; max-width: calc(100% - 32px); }

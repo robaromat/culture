@@ -2,7 +2,7 @@ import { useEffect } from 'preact/hooks';
 import './styles/ui.css';
 import './styles/library.css';
 import { Nav } from './components/Nav';
-import { Sheet, Toast } from './components/Overlays';
+import { Sheet, Toast, UpdateBanner } from './components/Overlays';
 import { route } from './router';
 import { isConfigured, settings } from './settings/settings';
 import { enrichImported, needsEnrichment } from './import/enrich';
@@ -66,6 +66,7 @@ export function App() {
         </main>
       </div>
       <Sheet />
+      <UpdateBanner />
       <Toast />
     </div>
   );
