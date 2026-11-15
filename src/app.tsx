@@ -1,23 +1,33 @@
-import './app.css';
+import { useEffect } from 'preact/hooks';
+import './styles/ui.css';
+import { Nav } from './components/Nav';
+import { route } from './router';
+import { isConfigured } from './settings/settings';
+import { engine, installSyncTriggers, startSync } from './sync/store';
+import { Setup } from './screens/Setup';
+import { SettingsScreen } from './screens/Settings';
+import { ComingSoon, Library } from './screens/Library';
 
-// Étape 1 du plan : une page en ligne, sans données. Les écrans validés en maquette arrivent aux étapes suivantes.
 export function App() {
+  const configured = isConfigured.value;
+
+  useEffect(() => {
+    installSyncTriggers();
+    if (configured && !engine.value) void startSync();
+  }, [configured]);
+
+  // Sans réglages, le site public ne montre que l'écran de configuration.
+  if (!configured) return <div class="app"><Setup /></div>;
+
+  const r = route.value;
   return (
-    <main class="welcome">
-      <div class="welcome-in">
-        <h1 class="wordmark">
-          Cult<em>ure</em>
-        </h1>
-        <p class="intro">
-          Tes livres, films, séries, musiques et podcasts à découvrir, synchronisés entre ton téléphone et ton
-          ordinateur.
-        </p>
-        <p class="status">
-          <span class="dot" aria-hidden="true" />
-          En construction · l'app arrive bientôt ici
-        </p>
-        <p class="version">v{__APP_VERSION__}</p>
+    <div class="app">
+      <div class="shell">
+        <Nav />
+        <main class="main">
+          {r === 'settings' ? <SettingsScreen /> : r === 'tags' ? <ComingSoon title="Tags" /> : r === 'add' ? <ComingSoon title="Ajouter" /> : <Library />}
+        </main>
       </div>
-    </main>
+    </div>
   );
 }
