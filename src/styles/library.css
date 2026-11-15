@@ -246,8 +246,30 @@ details.more .inner { display: flex; flex-direction: column; gap: 16px; padding-
 .detected { margin: 8px 16px; padding: 10px 12px; border-radius: 12px; background: var(--accent-soft); font-size: 13.5px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .detected svg.i { width: 16px; height: 16px; }
 .detected.warn { background: color-mix(in srgb, var(--warn) 14%, var(--surface)); }
-.manual.row-manual { flex-direction: row; align-items: center; justify-content: space-between; }
+
 .searchbox .iconbtn { width: 32px; height: 32px; }
 .spin { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: spin .8s linear infinite; display: inline-block; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .linkbtn:disabled { opacity: .6; }
+
+/* ---------- Import IMDb ---------- */
+.imp-list { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.imp-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; align-items: start; padding: 10px 12px; border-top: 1px solid var(--line); }
+.imp-row:first-child { border-top: 0; }
+.imp-row.off { opacity: .55; }
+.imp-row input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); }
+.imp-row .r-title { font-size: 15px; }
+.imp-sel { grid-column: 2; display: flex; gap: 6px; }
+.imp-sel .input { padding: 5px 8px; font-size: 13.5px; width: auto; }
+.warn-txt { color: var(--warn); }
+.checkline { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px; }
+.checkline input { width: 18px; height: 18px; accent-color: var(--accent); flex: none; margin-top: 1px; }
+.progress { width: 100%; height: 8px; accent-color: var(--accent); }
+@container app (min-width: 600px) {
+  .imp-row { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
+  .imp-sel { grid-column: auto; }
+}
+.res-group { display: flex; align-items: center; gap: 6px; margin: 14px 16px 2px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.res-group svg.i { width: 15px; height: 15px; }
+.manual .row-manual { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; }
+.chips.flat { padding: 0; }

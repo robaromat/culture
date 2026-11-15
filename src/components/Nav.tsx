@@ -17,6 +17,7 @@ function currentNav(): NavName {
   const n = route.value.name;
   if (n === 'item' || n === 'edit') return 'library';
   if (n === 'addForm') return 'add';
+  if (n === 'import') return 'settings';
   return n;
 }
 

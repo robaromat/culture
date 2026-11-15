@@ -8,6 +8,7 @@ import { testTmdbKey } from '../providers/tmdb';
 import { parseDataFile } from '../model/validate';
 import type { DataFile } from '../model/types';
 import { relativeTime } from '../lib/time';
+import { hrefOf } from '../router';
 import { disconnectSpotify, redirectUri as spotifyRedirectUri, spotifyConnected, startSpotifyLogin } from '../providers/spotify';
 
 type Test = null | { state: 'wait' } | { state: 'ok'; text: string } | { state: 'err'; text: string };
@@ -271,6 +272,10 @@ export function SettingsScreen() {
               </button>
               <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={pickImport} />
             </div>
+            <a class="btn small" href={hrefOf({ name: 'import' })}>
+              <Icon name="film" />
+              Importer une liste IMDb (Watchlist…)
+            </a>
             {importErr && <p class="testres err">{importErr}</p>}
             {importDraft && (
               <div class="confirm">

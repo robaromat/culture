@@ -12,6 +12,7 @@ import { Library } from './screens/Library';
 import { Add } from './screens/Add';
 import { ItemForm } from './screens/ItemForm';
 import { Tags } from './screens/Tags';
+import { ImportImdb } from './screens/ImportImdb';
 import { pendingDraft } from './state/draft';
 import { refreshStaleAvailability } from './sync/availabilityRefresh';
 
@@ -23,6 +24,8 @@ function Screen() {
       return <SettingsScreen />;
     case 'tags':
       return <Tags />;
+    case 'import':
+      return <ImportImdb />;
     case 'add':
       return <Add />;
     case 'addForm':

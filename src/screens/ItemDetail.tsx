@@ -15,7 +15,7 @@ import { showToast } from '../state/ui';
 import { checkAvailabilityNow } from '../sync/availabilityRefresh';
 
 const SUBTYPE: Record<string, string> = { album: 'Album', track: 'Titre', artist: 'Artiste', show: 'Émission', episode: 'Épisode' };
-const SOURCE: Record<string, string> = { tmdb: 'TMDB', openlibrary: 'Open Library', spotify: 'Spotify', manual: 'Saisie manuelle' };
+const SOURCE: Record<string, string> = { tmdb: 'TMDB', openlibrary: 'Open Library', spotify: 'Spotify', imdb: 'IMDb', manual: 'Saisie manuelle' };
 
 export function ItemDetail({ item, tags }: { item: Item; tags: Tag[] }) {
   const [confirmDel, setConfirmDel] = useState(false);

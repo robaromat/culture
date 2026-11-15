@@ -20,6 +20,19 @@ export function addItem(d: DataFile, draft: ItemDraft): { data: DataFile; id: st
   return { data: { ...d, items: [item, ...d.items] }, id: item.id };
 }
 
+/** Ajout groupé (import) : une seule modification, donc un seul commit. `addedAt` peut venir de la source. */
+export function addItems(d: DataFile, drafts: (ItemDraft & { addedAt?: string })[]): { data: DataFile; ids: string[] } {
+  const t = now();
+  const items: Item[] = drafts.map(({ addedAt, ...draft }) => ({
+    ...draft,
+    id: newId('i'),
+    addedAt: addedAt ?? t,
+    updatedAt: t,
+    finishedAt: draft.status === 'termine' ? (draft.finishedAt ?? t) : null,
+  }));
+  return { data: { ...d, items: [...items, ...d.items] }, ids: items.map((i) => i.id) };
+}
+
 export function updateItem(d: DataFile, id: string, patch: Partial<Omit<Item, 'id' | 'addedAt'>>): DataFile {
   return {
     ...d,

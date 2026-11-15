@@ -16,7 +16,7 @@ const CREATOR_LABEL: Record<Category, string> = {
   livre: 'Auteur', film: 'Réalisation', serie: 'Création', musique: 'Artiste', podcast: 'Animation', autre: 'Créateur',
 };
 
-const SOURCE_LABEL = { tmdb: 'TMDB', openlibrary: 'Open Library', spotify: 'Spotify', manual: 'saisie manuelle' } as const;
+const SOURCE_LABEL = { tmdb: 'TMDB', openlibrary: 'Open Library', spotify: 'Spotify', imdb: 'IMDb', manual: 'saisie manuelle' } as const;
 
 interface NewTag { tempId: string; name: string; color: string }
 

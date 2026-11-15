@@ -11,7 +11,8 @@ export type Route =
   | { name: 'add' }
   | { name: 'addForm'; category: Category }
   | { name: 'tags' }
-  | { name: 'settings' };
+  | { name: 'settings' }
+  | { name: 'import' };
 
 const CATS: Category[] = ['livre', 'film', 'serie', 'musique', 'podcast', 'autre'];
 
@@ -22,6 +23,7 @@ export function parseHash(hash: string): Route {
   if (a === 'ajouter') return b && (CATS as string[]).includes(b) ? { name: 'addForm', category: b as Category } : { name: 'add' };
   if (a === 'tags') return { name: 'tags' };
   if (a === 'reglages') return { name: 'settings' };
+  if (a === 'import') return { name: 'import' };
   return { name: 'library' };
 }
 
@@ -34,6 +36,7 @@ export function hrefOf(r: Route): string {
     case 'addForm': return `#/ajouter/${r.category}`;
     case 'tags': return '#/tags';
     case 'settings': return '#/reglages';
+    case 'import': return '#/import';
   }
 }
 

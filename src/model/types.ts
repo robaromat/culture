@@ -4,7 +4,8 @@
 export type Category = 'livre' | 'film' | 'serie' | 'musique' | 'podcast' | 'autre';
 /** « en_cours » n'est proposé que pour les séries. */
 export type Status = 'a_decouvrir' | 'en_cours' | 'termine';
-export type Provider = 'tmdb' | 'openlibrary' | 'spotify' | 'manual';
+/** « imdb » = importé depuis une liste IMDb, pas encore complété par TMDB. */
+export type Provider = 'tmdb' | 'openlibrary' | 'spotify' | 'imdb' | 'manual';
 export type SpotifySubtype = 'album' | 'track' | 'artist' | 'show' | 'episode';
 
 export interface Tag {
