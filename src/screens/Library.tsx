@@ -99,6 +99,7 @@ function LibraryList({ data, selectedId }: { data: DataFile; selectedId: string 
         <span class="spacer" />
         <SyncBadge />
       </header>
+      <SyncAlert />
       <div class="searchbox">
         <Icon name="search" />
         <input
@@ -164,6 +165,23 @@ function LibraryList({ data, selectedId }: { data: DataFile; selectedId: string 
         </div>
       )}
     </>
+  );
+}
+
+/** Synchro bloquée (jeton expiré, droits retirés…) : le dire franchement, avec le chemin pour réparer. */
+function SyncAlert() {
+  const e = engine.value;
+  if (!e || e.status.value !== 'error' || !e.error.value) return null;
+  const isToken = /jeton/i.test(e.error.value);
+  return (
+    <div class="detected warn sync-alert" role="alert">
+      <span>
+        {isToken
+          ? 'Ton jeton GitHub a été refusé (il a sans doute expiré). Tes modifications restent sur cet appareil en attendant.'
+          : `Synchronisation impossible : ${e.error.value}`}
+      </span>
+      <a class="linkbtn" href={hrefFor('settings')}>{isToken ? 'Mettre à jour le jeton' : 'Ouvrir les réglages'}</a>
+    </div>
   );
 }
 

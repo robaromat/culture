@@ -1,7 +1,7 @@
 {
   "name": "culture",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Culture : mes livres, films, séries, musiques et podcasts à découvrir (PWA personnelle).",
   "type": "module",
   "scripts": {

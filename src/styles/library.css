@@ -216,6 +216,8 @@ details.more .inner { display: flex; flex-direction: column; gap: 16px; padding-
   .lib { grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); }
   .detailpane { position: static; transform: none; visibility: visible; border-left: 1px solid var(--line); transition: none; }
   .detailpane .back { display: none; }
+  .dhero { grid-template-columns: 96px minmax(0, 1fr); gap: 14px; }
+  .d-title { font-size: 24px; }
   .placeholder { display: flex; }
   .toast { bottom: 24px; }
   .sheet { left: 50%; right: auto; bottom: auto; top: 50%; transform: translate(-50%, -50%); width: min(420px, 90%); border-radius: 16px; }
@@ -227,6 +229,8 @@ details.more .inner { display: flex; flex-direction: column; gap: 16px; padding-
   .nav .navfilters { display: flex; flex-direction: column; gap: 16px; }
   .lib .chips.cats { display: none; }
   .lib { grid-template-columns: minmax(0, 1fr) 420px; }
+  .dhero { grid-template-columns: 120px minmax(0, 1fr); }
+  .d-title { font-size: 26px; }
   .row { grid-template-columns: 44px minmax(0, 1fr); }
   .row .thumb { height: 66px; }
   .row .thumb .cover { width: 44px; }
@@ -276,3 +280,5 @@ details.more .inner { display: flex; flex-direction: column; gap: 16px; padding-
 
 /* ---------- Mise à jour disponible ---------- */
 .update { position: absolute; left: 50%; top: calc(10px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 40; display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 14px; border-radius: 12px; background: var(--raised); border: 1px solid var(--line); box-shadow: var(--shadow); font-size: 13.5px; width: max-content; max-width: calc(100% - 32px); }
+
+.sync-alert { margin: 4px 16px 6px; }
