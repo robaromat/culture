@@ -4,7 +4,8 @@ import './styles/library.css';
 import { Nav } from './components/Nav';
 import { Sheet, Toast } from './components/Overlays';
 import { route } from './router';
-import { isConfigured } from './settings/settings';
+import { isConfigured, settings } from './settings/settings';
+import { enrichImported, needsEnrichment } from './import/enrich';
 import { engine, installSyncTriggers, startSync } from './sync/store';
 import { Setup } from './screens/Setup';
 import { SettingsScreen } from './screens/Settings';
@@ -44,7 +45,13 @@ export function App() {
 
   useEffect(() => {
     installSyncTriggers();
-    if (configured && !engine.value) void startSync().then(() => refreshStaleAvailability());
+    if (configured && !engine.value)
+      void startSync()
+        .then(() => refreshStaleAvailability())
+        .then(() => {
+          // Fiches venues d'IMDb pas encore complétées (affiche, disponibilité) : on s'en occupe en arrière-plan.
+          if (settings.value.tmdbKey && engine.value?.data.value?.items.some(needsEnrichment)) void enrichImported();
+        });
   }, [configured]);
 
   // Sans réglages, le site public ne montre que l'écran de configuration.
