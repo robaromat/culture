@@ -8,6 +8,7 @@ import { testTmdbKey } from '../providers/tmdb';
 import { parseDataFile } from '../model/validate';
 import type { DataFile } from '../model/types';
 import { relativeTime } from '../lib/time';
+import { disconnectSpotify, redirectUri as spotifyRedirectUri, spotifyConnected, startSpotifyLogin } from '../providers/spotify';
 
 type Test = null | { state: 'wait' } | { state: 'ok'; text: string } | { state: 'err'; text: string };
 
@@ -73,7 +74,8 @@ export function SettingsScreen() {
 
   // --- Spotify
   const [spotify, setSpotify] = useState(s.spotifyClientId);
-  const redirectUri = location.origin + import.meta.env.BASE_URL;
+  const [spTest, setSpTest] = useState<Test>(null);
+  const redirectUri = spotifyRedirectUri();
 
   // --- Sauvegarde
   const fileInput = useRef<HTMLInputElement>(null);
@@ -202,7 +204,30 @@ export function SettingsScreen() {
             <p class="small">
               Adresse de redirection à déclarer chez Spotify : <span class="mono">{redirectUri}</span>
             </p>
-            <p class="small">La connexion à Spotify arrive avec la recherche intégrée (étape 4).</p>
+            {spotifyConnected.value ? (
+              <div class="btnrow">
+                <span class="testres ok"><Icon name="check" />Connecté : recherche Spotify active</span>
+                <button class="btn small ghost" onClick={disconnectSpotify}>Déconnecter</button>
+              </div>
+            ) : (
+              <div class="btnrow">
+                <button
+                  class="btn small"
+                  disabled={!spotify.trim()}
+                  onClick={async () => {
+                    updateSettings({ spotifyClientId: spotify.trim() });
+                    try {
+                      await startSpotifyLogin();
+                    } catch (err) {
+                      setSpTest({ state: 'err', text: err instanceof Error ? err.message : String(err) });
+                    }
+                  }}
+                >
+                  Se connecter à Spotify
+                </button>
+                <TestResult t={spTest} />
+              </div>
+            )}
           </section>
 
           <section class="card">

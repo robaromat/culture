@@ -3,7 +3,7 @@ import { Icon } from '../components/Icon';
 import { Cover } from '../components/Cover';
 import { ProviderBadges, Stars, TagChip } from '../components/bits';
 import { CAT_ICON } from '../components/catIcon';
-import { CATEGORIES, statusLabel } from '../model/labels';
+import { CATEGORIES, statusesFor, statusLabel } from '../model/labels';
 import { deleteItem, setStatus } from '../model/ops';
 import type { Item, Status, Tag } from '../model/types';
 import { mutate } from '../sync/store';
@@ -12,13 +12,27 @@ import { openLabel, safeHttpUrl } from '../lib/url';
 import { formatDate, relativeTime } from '../lib/time';
 import { settings } from '../settings/settings';
 import { showToast } from '../state/ui';
+import { checkAvailabilityNow } from '../sync/availabilityRefresh';
 
 const SUBTYPE: Record<string, string> = { album: 'Album', track: 'Titre', artist: 'Artiste', show: 'Émission', episode: 'Épisode' };
 const SOURCE: Record<string, string> = { tmdb: 'TMDB', openlibrary: 'Open Library', spotify: 'Spotify', manual: 'Saisie manuelle' };
 
 export function ItemDetail({ item, tags }: { item: Item; tags: Tag[] }) {
   const [confirmDel, setConfirmDel] = useState(false);
+  const [checking, setChecking] = useState(false);
   useEffect(() => setConfirmDel(false), [item.id]);
+
+  async function checkNow() {
+    setChecking(true);
+    try {
+      await checkAvailabilityNow(item);
+      showToast('Disponibilité vérifiée');
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Vérification impossible');
+    } finally {
+      setChecking(false);
+    }
+  }
 
   const c = CATEGORIES[item.category];
   const link = item.category === 'livre' ? null : safeHttpUrl(item.link);
@@ -76,7 +90,7 @@ export function ItemDetail({ item, tags }: { item: Item; tags: Tag[] }) {
           </div>
         )}
         <div class="seg" role="group" aria-label="Statut">
-          {(['a_decouvrir', 'termine'] as const).map((s) => (
+          {statusesFor(item.category).map((s) => (
             <button key={s} aria-pressed={item.status === s} onClick={() => changeStatus(s)}>
               {statusLabel(s, item.category)}
             </button>
@@ -100,7 +114,13 @@ export function ItemDetail({ item, tags }: { item: Item; tags: Tag[] }) {
                 <span class="small">Pas sur tes abonnements ({trackedNames}) en France.</span>
               )}
             </div>
-            <div class="small">Vérifié {relativeTime(item.availability.checkedAt)}</div>
+            <div class="small">
+              Vérifié {relativeTime(item.availability.checkedAt)} ·{' '}
+              <button class="linkbtn" disabled={checking} onClick={checkNow}>
+                <Icon name="refresh" />
+                {checking ? 'Vérification…' : 'Vérifier maintenant'}
+              </button>
+            </div>
             <div class="small">Données de disponibilité : JustWatch</div>
           </div>
         )}

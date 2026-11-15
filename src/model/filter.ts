@@ -1,6 +1,7 @@
 import type { Category, Item } from './types';
 
-export type StatusFilter = 'a_decouvrir' | 'termine' | 'all';
+/** « a_decouvrir » = tout ce qui n'est pas terminé (séries en cours comprises). */
+export type StatusFilter = 'a_decouvrir' | 'en_cours' | 'termine' | 'all';
 export type SortKey = 'added' | 'title' | 'rating' | 'year';
 
 export interface Filters {
@@ -26,7 +27,7 @@ export function filterItems(items: readonly Item[], f: Filters): Item[] {
   const terms = fold(f.query).split(/\s+/).filter(Boolean);
   return items.filter((i) => {
     if (f.category !== 'all' && i.category !== f.category) return false;
-    if (f.status !== 'all' && i.status !== f.status) return false;
+    if (f.status === 'a_decouvrir' ? i.status === 'termine' : f.status !== 'all' && i.status !== f.status) return false;
     if (!f.tags.every((t) => i.tags.includes(t))) return false;
     if (f.onlyProviders && !i.availability?.providers.some((p) => f.onlyProviders!.includes(p))) return false;
     if (terms.length) {

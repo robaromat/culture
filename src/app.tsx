@@ -12,6 +12,8 @@ import { Library } from './screens/Library';
 import { Add } from './screens/Add';
 import { ItemForm } from './screens/ItemForm';
 import { Tags } from './screens/Tags';
+import { pendingDraft } from './state/draft';
+import { refreshStaleAvailability } from './sync/availabilityRefresh';
 
 function Screen() {
   const r = route.value;
@@ -24,7 +26,7 @@ function Screen() {
     case 'add':
       return <Add />;
     case 'addForm':
-      return <ItemForm key={`add-${r.category}`} mode="add" category={r.category} />;
+      return <ItemForm key={`add-${r.category}`} mode="add" category={r.category} initial={pendingDraft.peek() ?? undefined} />;
     case 'edit': {
       const item = data?.items.find((i) => i.id === r.id);
       return item ? <ItemForm key={`edit-${item.id}`} mode="edit" item={item} /> : <Library />;
@@ -39,7 +41,7 @@ export function App() {
 
   useEffect(() => {
     installSyncTriggers();
-    if (configured && !engine.value) void startSync();
+    if (configured && !engine.value) void startSync().then(() => refreshStaleAvailability());
   }, [configured]);
 
   // Sans réglages, le site public ne montre que l'écran de configuration.

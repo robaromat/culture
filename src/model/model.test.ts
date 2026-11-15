@@ -73,6 +73,12 @@ describe('filtres et tri', () => {
   it('combine les tags en ET', () => {
     expect(filterItems(d.items, { ...all, tags: ['a', 'b'] }).map((i) => i.title)).toEqual(['Perfect Days']);
   });
+  it('« À voir » inclut les séries en cours', () => {
+    const e = addItem(d, draft({ title: 'Dark', category: 'serie', status: 'en_cours' })).data;
+    expect(filterItems(e.items, { ...all, status: 'a_decouvrir', category: 'serie' }).map((i) => i.title)).toEqual(['Dark']);
+    expect(filterItems(e.items, { ...all, status: 'en_cours' }).map((i) => i.title)).toEqual(['Dark']);
+    expect(filterItems(e.items, { ...all, status: 'termine', category: 'serie' })).toEqual([]);
+  });
   it('filtre statut et catégorie', () => {
     expect(filterItems(d.items, { ...all, status: 'a_decouvrir', category: 'film' }).map((i) => i.title)).toEqual(['Anatomie d’une chute']);
   });

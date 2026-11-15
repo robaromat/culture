@@ -20,5 +20,11 @@ export const CATEGORIES: Record<Category, CategoryInfo> = {
 /** Libellé du statut d'une fiche, adapté à sa catégorie (« À lire », « Vu »…). */
 export function statusLabel(status: Status, category?: Category): string {
   if (status === 'a_decouvrir') return category ? CATEGORIES[category].todo : 'À voir';
+  if (status === 'en_cours') return 'En cours';
   return category ? CATEGORIES[category].done : 'Vu';
+}
+
+/** Statuts proposés pour une catégorie : « En cours » seulement pour les séries. */
+export function statusesFor(category: Category): Status[] {
+  return category === 'serie' ? ['a_decouvrir', 'en_cours', 'termine'] : ['a_decouvrir', 'termine'];
 }

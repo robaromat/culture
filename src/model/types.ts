@@ -2,7 +2,8 @@
 // deux statuts seulement, et supprimer une fiche l'efface (l'historique reste dans les commits GitHub).
 
 export type Category = 'livre' | 'film' | 'serie' | 'musique' | 'podcast' | 'autre';
-export type Status = 'a_decouvrir' | 'termine';
+/** « en_cours » n'est proposé que pour les séries. */
+export type Status = 'a_decouvrir' | 'en_cours' | 'termine';
 export type Provider = 'tmdb' | 'openlibrary' | 'spotify' | 'manual';
 export type SpotifySubtype = 'album' | 'track' | 'artist' | 'show' | 'episode';
 
@@ -30,7 +31,8 @@ export interface Item {
   tags: string[]; // ids de Tag
   notes: string;
   link: string | null;
-  source: { provider: Provider; id: string | null; subtype: SpotifySubtype | null };
+  /** id = identifiant chez le fournisseur (TMDB, clé Open Library « /works/… », id Spotify). imdbId sert à repérer les doublons. */
+  source: { provider: Provider; id: string | null; subtype: SpotifySubtype | null; imdbId?: string | null };
   recommendedBy: string;
   availability?: Availability; // films et séries uniquement
   addedAt: string;

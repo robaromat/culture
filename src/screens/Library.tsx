@@ -15,8 +15,15 @@ import { ItemDetail } from './ItemDetail';
 function statusFilterLabel(s: StatusFilter): string {
   const cat = fCategory.value === 'all' ? null : CATEGORIES[fCategory.value];
   if (s === 'all') return 'Tout';
+  if (s === 'en_cours') return 'En cours';
   if (s === 'a_decouvrir') return cat ? cat.todo : 'À voir';
   return cat ? cat.donePlural : 'Déjà vus';
+}
+
+/** « En cours » n'a de sens que pour les séries : proposé sur « Tout » et « Séries ». */
+function statusOptions(): StatusFilter[] {
+  const c = fCategory.value;
+  return c === 'all' || c === 'serie' || fStatus.value === 'en_cours' ? ['a_decouvrir', 'en_cours', 'termine', 'all'] : ['a_decouvrir', 'termine', 'all'];
 }
 
 export function Library() {
@@ -114,7 +121,7 @@ function LibraryList({ data, selectedId }: { data: DataFile; selectedId: string 
       </div>
       <div class="filters">
         <span class="stseg" role="group" aria-label="Statut">
-          {(['a_decouvrir', 'termine', 'all'] as const).map((s) => (
+          {statusOptions().map((s) => (
             <button key={s} aria-pressed={fStatus.value === s} onClick={() => (fStatus.value = s)}>
               {statusFilterLabel(s)}
             </button>
@@ -171,6 +178,7 @@ function Row({ it, tagMap, current }: { it: Item; tagMap: Map<string, Tag>; curr
           {it.status === 'termine' && (
             <span class="st done"><Icon name="check" />{statusLabel('termine', it.category)}</span>
           )}
+          {it.status === 'en_cours' && <span class="st doing">{statusLabel('en_cours', it.category)}</span>}
           <Stars value={it.rating} />
           <ProviderBadges item={it} />
           {it.tags.map((id) => {

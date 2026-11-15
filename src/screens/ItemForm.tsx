@@ -2,17 +2,21 @@ import { useState } from 'preact/hooks';
 import { Icon } from '../components/Icon';
 import { Cover } from '../components/Cover';
 import { CAT_ICON, CATEGORY_ORDER } from '../components/catIcon';
-import { CATEGORIES, statusLabel } from '../model/labels';
+import { CATEGORIES, statusesFor, statusLabel } from '../model/labels';
 import { addItem, createTag, TAG_COLORS, updateItem, type ItemDraft } from '../model/ops';
 import type { Category, DataFile, Item, Status } from '../model/types';
 import { engine, mutate } from '../sync/store';
 import { back, navigate } from '../router';
 import { safeHttpUrl } from '../lib/url';
 import { showToast } from '../state/ui';
+import { pendingDraft } from '../state/draft';
+import { ProviderBadges } from '../components/bits';
 
 const CREATOR_LABEL: Record<Category, string> = {
   livre: 'Auteur', film: 'Réalisation', serie: 'Création', musique: 'Artiste', podcast: 'Animation', autre: 'Créateur',
 };
+
+const SOURCE_LABEL = { tmdb: 'TMDB', openlibrary: 'Open Library', spotify: 'Spotify', manual: 'saisie manuelle' } as const;
 
 interface NewTag { tempId: string; name: string; color: string }
 
@@ -75,7 +79,8 @@ export function ItemForm(props: Props) {
       return;
     }
 
-    const clean: ItemDraft = { ...d, title, creator: d.creator.trim(), recommendedBy: d.recommendedBy.trim(), notes: d.notes.trim(), year, link, cover };
+    const status = statusesFor(d.category).includes(d.status) ? d.status : 'a_decouvrir';
+    const clean: ItemDraft = { ...d, status, title, creator: d.creator.trim(), recommendedBy: d.recommendedBy.trim(), notes: d.notes.trim(), year, link, cover };
     let newId = '';
     mutate((data0: DataFile) => {
       let next = data0;
@@ -96,6 +101,7 @@ export function ItemForm(props: Props) {
       showToast('Fiche enregistrée');
       back({ name: 'item', id: props.item.id });
     } else {
+      pendingDraft.value = null;
       showToast(`Ajouté : ${title}`);
       navigate({ name: 'item', id: newId }, { replace: true });
     }
@@ -115,8 +121,23 @@ export function ItemForm(props: Props) {
           <div class="eyebrow">
             <Icon name={CAT_ICON[d.category]} />
             {c.label}
-            {d.source.provider === 'manual' ? ' · saisie manuelle' : ''}
+            {d.source.provider === 'manual' ? ' · saisie manuelle' : ` · pré-rempli depuis ${SOURCE_LABEL[d.source.provider]}`}
           </div>
+          {d.availability && (d.category === 'film' || d.category === 'serie') && (
+            <div class="avail">
+              <div class="provs">
+                {d.availability.providers.length ? (
+                  <>
+                    <ProviderBadges item={d as Item} />
+                    <span class="small">inclus dans l'abonnement, France</span>
+                  </>
+                ) : (
+                  <span class="small">Pas sur tes abonnements en France pour l'instant.</span>
+                )}
+              </div>
+              <div class="small">Données de disponibilité : JustWatch</div>
+            </div>
+          )}
           <div class="fhero">
             <div><Cover category={d.category} title={d.title || 'Titre'} creator={d.creator} cover={safeHttpUrl(d.cover)} /></div>
             <div class="fhero-fields">
@@ -188,7 +209,7 @@ export function ItemForm(props: Props) {
           <div class="field">
             <span class="flabel">Statut</span>
             <div class="seg" role="group" aria-label="Statut">
-              {(['a_decouvrir', 'termine'] as Status[]).map((s) => (
+              {statusesFor(d.category).map((s: Status) => (
                 <button type="button" key={s} aria-pressed={d.status === s} onClick={() => set('status', s)}>
                   {statusLabel(s, d.category)}
                 </button>
