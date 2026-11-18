@@ -7,7 +7,7 @@ import { CATEGORIES } from '../model/labels';
 import type { Category } from '../model/types';
 import { hrefFor, hrefOf, navigate } from '../router';
 import { fCategory } from '../state/ui';
-import { pendingArticleUrl, pendingDraft } from '../state/draft';
+import { pendingArticleUrl, pendingDraft, pendingSearch } from '../state/draft';
 import { engine } from '../sync/store';
 import { settings } from '../settings/settings';
 import { searchBooks } from '../providers/openlibrary';
@@ -81,8 +81,14 @@ async function searchAll(q: string, signal: AbortSignal): Promise<{ results: Sea
 }
 
 export function Add() {
-  const [cat, setCat] = useState<Scope>(fCategory.value);
-  const [q, setQ] = useState('');
+  // Venu de la bibliothèque (« Chercher … pour l'ajouter ») : on reprend le texte et on cherche partout.
+  const fromLibrary = useState(() => {
+    const s = pendingSearch.peek();
+    pendingSearch.value = null;
+    return s;
+  })[0];
+  const [cat, setCat] = useState<Scope>(fromLibrary ? 'all' : fCategory.value);
+  const [q, setQ] = useState(fromLibrary ?? '');
   const [st, setSt] = useState<State>({ kind: 'idle' });
   const [picking, setPicking] = useState<string | null>(null);
   const [chooseManual, setChooseManual] = useState(false);

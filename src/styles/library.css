@@ -213,9 +213,13 @@ details.more .inner { display: flex; flex-direction: column; gap: 16px; padding-
 
 /* ---------- Fold déplié ---------- */
 @container app (min-width: 600px) {
-  .lib { grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); }
+  /* Liste en pleine largeur tant qu'aucune fiche n'est ouverte ; la fiche s'ouvre à côté. */
+  .lib { grid-template-columns: minmax(0, 1fr); }
+  .lib.has-detail { grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); }
+  .lib:not(.has-detail) .detailpane { display: none; }
+  .lib:not(.has-detail) .listpane { padding-inline: max(0px, calc((100% - 760px) / 2)); }
   .detailpane { position: static; transform: none; visibility: visible; border-left: 1px solid var(--line); transition: none; }
-  .detailpane .back { display: none; }
+
   .dhero { grid-template-columns: 96px minmax(0, 1fr); gap: 14px; }
   .d-title { font-size: 24px; }
   .placeholder { display: flex; }
@@ -228,7 +232,7 @@ details.more .inner { display: flex; flex-direction: column; gap: 16px; padding-
 @container app (min-width: 1000px) {
   .nav .navfilters { display: flex; flex-direction: column; gap: 16px; }
   .lib .chips.cats { display: none; }
-  .lib { grid-template-columns: minmax(0, 1fr) 420px; }
+  .lib.has-detail { grid-template-columns: minmax(0, 1fr) 420px; }
   .dhero { grid-template-columns: 120px minmax(0, 1fr); }
   .d-title { font-size: 26px; }
   .row { grid-template-columns: 44px minmax(0, 1fr); }
@@ -293,3 +297,5 @@ details.more .inner { display: flex; flex-direction: column; gap: 16px; padding-
 .art-manual { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
 .art-manual .input { width: auto; padding: 4px 8px; font-size: 13.5px; }
 .card .spin, .savebar .spin { width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px; }
+
+.list-more { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 4px 16px 28px; padding: 12px 14px; border: 1px dashed var(--line); border-radius: 12px; }

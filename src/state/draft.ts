@@ -6,3 +6,6 @@ export const pendingDraft = signal<Partial<ItemDraft> | null>(null);
 
 /** Adresse d'article collée dans l'écran Ajouter, à lire dans l'écran « Depuis un article ». */
 export const pendingArticleUrl = signal<string | null>(null);
+
+/** Texte cherché dans la bibliothèque sans résultat, à reprendre dans l'écran Ajouter. */
+export const pendingSearch = signal<string | null>(null);

@@ -5,12 +5,13 @@ import { Cover } from '../components/Cover';
 import { ProviderBadges, Stars, TagChip, enabledProviderKeys } from '../components/bits';
 import { CAT_ICON, CATEGORY_ORDER } from '../components/catIcon';
 import { engine } from '../sync/store';
-import { hrefFor, hrefOf, route } from '../router';
+import { hrefFor, hrefOf, navigate, route } from '../router';
 import { CATEGORIES, statusLabel } from '../model/labels';
 import { filterItems, sortItems, SORT_LABELS, type StatusFilter } from '../model/filter';
 import type { DataFile, Item, Tag } from '../model/types';
 import { fCategory, fQuery, fStatus, fSubs, fTags, hasActiveFilters, resetFilters, sheet, sortKey, viewMode } from '../state/ui';
 import { ItemDetail } from './ItemDetail';
+import { pendingSearch } from '../state/draft';
 
 function statusFilterLabel(s: StatusFilter): string {
   const cat = fCategory.value === 'all' ? null : CATEGORIES[fCategory.value];
@@ -59,7 +60,7 @@ export function Library() {
 
   const selected = selectedId ? data.items.find((i) => i.id === selectedId) : undefined;
   return (
-    <div class="lib">
+    <div class={`lib ${selectedId ? 'has-detail' : ''}`}>
       <section class="listpane" aria-label="Fiches">
         <LibraryList data={data} selectedId={selectedId} />
       </section>
@@ -69,7 +70,7 @@ export function Library() {
         ) : selectedId ? (
           <div class="placeholder show"><div><div class="h-title">Fiche introuvable</div><p>Elle a peut-être été supprimée sur un autre appareil.</p><a class="linkbtn" href="#/">Retour à la liste</a></div></div>
         ) : (
-          <div class="placeholder"><div><div class="h-title">Choisis une fiche</div><p>Elle s'affichera ici, à côté de la liste.</p></div></div>
+          null
         )}
       </section>
     </div>
@@ -164,6 +165,9 @@ function LibraryList({ data, selectedId }: { data: DataFile; selectedId: string 
           ))}
         </div>
       )}
+      {n > 0 && fQuery.value.trim() && (
+        <div class="list-more"><span class="small">Pas ce que tu cherches ?</span><AddFromSearch q={fQuery.value.trim()} /></div>
+      )}
     </>
   );
 }
@@ -219,11 +223,44 @@ function EmptyState({ total }: { total: number }) {
       </div>
     );
   }
+  const q = fQuery.value.trim();
+  if (q) {
+    // Le titre existe peut-être, mais masqué par un autre filtre (statut, catégorie, tags…).
+    const elsewhere = filterItems(engine.value?.data.value?.items ?? [], { category: 'all', status: 'all', tags: [], query: q, onlyProviders: null }).length;
+    return (
+      <div class="empty">
+        <div class="h-title">« {q} » n'est pas dans ta liste</div>
+        {elsewhere > 0 && (
+          <p>
+            {elsewhere} fiche{elsewhere > 1 ? 's' : ''} correspond{elsewhere > 1 ? 'ent' : ''} avec d'autres filtres.{' '}
+            <button class="linkbtn" onClick={() => showAllFor(q)}>Les voir</button>
+          </p>
+        )}
+        <p><AddFromSearch q={q} primary /></p>
+      </div>
+    );
+  }
   return (
     <div class="empty">
       <div class="h-title">Rien ici pour l'instant</div>
       <p>Aucune fiche ne correspond à ces filtres.</p>
       {hasActiveFilters.value && <p><button class="btn small" onClick={resetFilters}>Effacer les filtres</button></p>}
     </div>
+  );
+}
+
+/** Garde la recherche, enlève les autres filtres. */
+function showAllFor(q: string) {
+  resetFilters();
+  fStatus.value = 'all';
+  fQuery.value = q;
+}
+
+/** « Chercher « … » pour l'ajouter » : ouvre l'écran Ajouter avec ce texte, sur toutes les sources. */
+function AddFromSearch({ q, primary }: { q: string; primary?: boolean }) {
+  return (
+    <button class={`btn small ${primary ? 'primary' : ''}`} onClick={() => { pendingSearch.value = q; navigate({ name: 'add' }); }}>
+      <Icon name="plus" />Chercher « {q} » pour l'ajouter
+    </button>
   );
 }
