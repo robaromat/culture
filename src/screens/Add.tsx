@@ -7,7 +7,7 @@ import { CATEGORIES } from '../model/labels';
 import type { Category } from '../model/types';
 import { hrefFor, hrefOf, navigate } from '../router';
 import { fCategory } from '../state/ui';
-import { pendingDraft } from '../state/draft';
+import { pendingArticleUrl, pendingDraft } from '../state/draft';
 import { engine } from '../sync/store';
 import { settings } from '../settings/settings';
 import { searchBooks } from '../providers/openlibrary';
@@ -36,7 +36,7 @@ type State =
   | { kind: 'idle' }
   | { kind: 'loading' }
   | { kind: 'results'; results: SearchResult[]; fromLink: boolean; notes: string[] }
-  | { kind: 'error'; message: string; needs?: 'tmdb' | 'spotify' };
+  | { kind: 'error'; message: string; needs?: 'tmdb' | 'spotify' | 'article'; url?: string };
 
 const hasTmdb = () => !!settings.value.tmdbKey;
 const NOTE_TMDB = 'Films et séries : ajoute ta clé TMDB dans Réglages pour les chercher.';
@@ -106,7 +106,7 @@ export function Add() {
         if (isLink) {
           const r = await resultFromLink(query);
           if (ctrl.signal.aborted) return;
-          if (!r) setSt({ kind: 'error', message: 'Lien non reconnu. Tu peux saisir la fiche à la main : le lien sera gardé.' });
+          if (!r) setSt({ kind: 'error', message: 'Ce lien n’est pas une fiche Spotify, TMDB, IMDb ou Open Library. Si c’est un article qui recommande des œuvres, Culture peut en repérer les titres.', needs: 'article', url: query });
           else setSt({ kind: 'results', results: [r], fromLink: true, notes: [] });
         } else if (cat === 'all') {
           const { results, notes } = await searchAll(query, ctrl.signal);
@@ -194,26 +194,56 @@ export function Add() {
               />
               {q && <button class="iconbtn" aria-label="Effacer" onClick={() => setQ('')}><Icon name="close" /></button>}
             </div>
-            <p class="hint">Recherche dans {SOURCE[cat]}, ou colle un lien Spotify, TMDB, IMDb ou Open Library.</p>
+            <p class="hint">
+              Recherche dans {SOURCE[cat]}, ou colle un lien Spotify, TMDB, IMDb ou Open Library ·{' '}
+              <a class="linkbtn" href={hrefOf({ name: 'article' })} onClick={() => (pendingArticleUrl.value = null)}>plusieurs titres depuis un article</a>
+            </p>
             <Results st={st} cat={cat} picking={picking} already={already} onPick={pick} />
-            <div class="manual">
-              <div class="row-manual">
-                <span>Pas trouvé ?</span>
-                <button class="btn small" onClick={() => (cat === 'all' ? setChooseManual(!chooseManual) : manual(cat))}>
-                  <Icon name="edit" />Saisir à la main
-                </button>
-              </div>
-              {cat === 'all' && chooseManual && (
-                <div class="chips wrap flat">
-                  {CATEGORY_ORDER.map((c) => (
-                    <button key={c} class="chip" onClick={() => manual(c)}><Icon name={CAT_ICON[c]} />{CATEGORIES[c].label}</button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <ManualAdd
+              typed={q.trim() && !looksLikeLink(q) ? q.trim() : ''}
+              noResults={(st.kind === 'results' && !st.results.length) || st.kind === 'error'}
+              cat={cat}
+              open={chooseManual}
+              onToggle={() => setChooseManual(!chooseManual)}
+              onAdd={manual}
+            />
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Ajout à la main, avec ce qui a déjà été tapé comme titre.
+ * Mis en avant quand la recherche ne trouve rien ; en « Tout », il faut juste choisir la catégorie.
+ */
+function ManualAdd({ typed, noResults, cat, open, onToggle, onAdd }: {
+  typed: string; noResults: boolean; cat: Scope; open: boolean;
+  onToggle: () => void; onAdd: (c: Category) => void;
+}) {
+  const label = typed ? `Ajouter « ${typed} »` : 'Saisir à la main';
+  const showCats = cat === 'all' && (open || (typed !== '' && noResults));
+  return (
+    <div class={`manual ${typed && noResults ? 'highlight' : ''}`}>
+      <div class="row-manual">
+        <span>{typed && noResults ? 'Pas trouvé : tu peux créer la fiche toi-même.' : 'Pas dans la liste ?'}</span>
+        {cat === 'all' ? (
+          !showCats && <button class="btn small" onClick={onToggle}><Icon name="edit" />{label}</button>
+        ) : (
+          <button class={`btn small ${typed && noResults ? 'primary' : ''}`} onClick={() => onAdd(cat)}><Icon name="edit" />{label}</button>
+        )}
+      </div>
+      {showCats && (
+        <>
+          <span class="small">{typed ? `Ajouter « ${typed} » comme :` : 'Choisis la catégorie :'}</span>
+          <div class="chips wrap flat">
+            {CATEGORY_ORDER.map((c) => (
+              <button key={c} class="chip" onClick={() => onAdd(c)}><Icon name={CAT_ICON[c]} />{CATEGORIES[c].label}</button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -229,7 +259,13 @@ function Results({ st, cat, picking, already, onPick }: {
     return (
       <div class="detected warn" role="status">
         <span>{st.message}</span>
-        {st.needs && <a class="linkbtn" href={hrefFor('settings')}>Ouvrir les réglages</a>}
+        {st.needs === 'article' ? (
+          <a class="btn small primary" href={hrefOf({ name: 'article' })} onClick={() => (pendingArticleUrl.value = st.url ?? null)}>
+            <Icon name="list" />Lire l'article et choisir les titres
+          </a>
+        ) : (
+          st.needs && <a class="linkbtn" href={hrefFor('settings')}>Ouvrir les réglages</a>
+        )}
       </div>
     );
   const grouped = cat === 'all' && !st.fromLink;
@@ -239,7 +275,7 @@ function Results({ st, cat, picking, already, onPick }: {
   return (
     <>
       {st.fromLink && st.results[0] && <div class="detected"><Icon name="check" />Lien reconnu · {CATEGORIES[st.results[0].category].label}</div>}
-      {!st.results.length && <p class="hint">Aucun résultat. Essaie un autre mot, ou saisis la fiche à la main.</p>}
+      {!st.results.length && <p class="hint">Aucun résultat. Essaie un autre mot, ou crée la fiche ci-dessous.</p>}
       {groups.map(([c, rs]) => (
         <div key={c ?? 'all'}>
           {c && <h2 class="res-group"><Icon name={CAT_ICON[c]} />{CATEGORIES[c].plural}</h2>}

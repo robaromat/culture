@@ -62,6 +62,8 @@ npm run build     # vérification des types + build dans dist/
 
 Ajouts en cours de route : statut « En cours » pour les séries, import IMDb, recherche « Tout ».
 
+v1.1 : ajout du titre tapé quand la recherche ne trouve rien ; « Depuis un article » (lien lu via le relais public r.jina.ai, ou texte collé) : titres repérés, retrouvés dans TMDB / Open Library / Spotify, à cocher.
+
 Hors périmètre v1 : partage, statistiques, import Goodreads / Letterboxd, ajout depuis le menu « Partager » du téléphone.
 
 Données de disponibilité : JustWatch (via TMDB).

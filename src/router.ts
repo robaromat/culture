@@ -12,7 +12,8 @@ export type Route =
   | { name: 'addForm'; category: Category }
   | { name: 'tags' }
   | { name: 'settings' }
-  | { name: 'import' };
+  | { name: 'import' }
+  | { name: 'article' };
 
 const CATS: Category[] = ['livre', 'film', 'serie', 'musique', 'podcast', 'autre'];
 
@@ -24,6 +25,7 @@ export function parseHash(hash: string): Route {
   if (a === 'tags') return { name: 'tags' };
   if (a === 'reglages') return { name: 'settings' };
   if (a === 'import') return { name: 'import' };
+  if (a === 'article') return { name: 'article' };
   return { name: 'library' };
 }
 
@@ -37,6 +39,7 @@ export function hrefOf(r: Route): string {
     case 'tags': return '#/tags';
     case 'settings': return '#/reglages';
     case 'import': return '#/import';
+    case 'article': return '#/article';
   }
 }
 

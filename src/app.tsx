@@ -14,6 +14,7 @@ import { Add } from './screens/Add';
 import { ItemForm } from './screens/ItemForm';
 import { Tags } from './screens/Tags';
 import { ImportImdb } from './screens/ImportImdb';
+import { ArticleImport } from './screens/ArticleImport';
 import { pendingDraft } from './state/draft';
 import { refreshStaleAvailability } from './sync/availabilityRefresh';
 
@@ -27,6 +28,8 @@ function Screen() {
       return <Tags />;
     case 'import':
       return <ImportImdb />;
+    case 'article':
+      return <ArticleImport />;
     case 'add':
       return <Add />;
     case 'addForm':
