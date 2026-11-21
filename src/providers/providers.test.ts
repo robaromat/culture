@@ -9,6 +9,14 @@ describe('disponibilité', () => {
   it('reconnaît Netflix, Prime Video (avec pub) et Canal+ par id', () => {
     expect(trackedAvailability(wp([{ provider_id: 8, provider_name: 'Netflix' }, { provider_id: 2100, provider_name: 'Amazon Prime Video with Ads' }, { provider_id: 381, provider_name: 'Canal+' }]), DEFAULT_PROVIDERS)).toEqual(['netflix', 'prime', 'canal']);
   });
+  it('compte Arte et France TV, proposés gratuitement (« free »)', () => {
+    const wp2 = { results: { FR: { free: [{ provider_id: 234, provider_name: 'Arte' }, { provider_id: 9998, provider_name: 'France TV' }] } } };
+    expect(trackedAvailability(wp2, DEFAULT_PROVIDERS)).toEqual(['arte', 'francetv']);
+  });
+  it('ignore location et achat', () => {
+    const wp3 = { results: { FR: { rent: [{ provider_id: 8, provider_name: 'Netflix' }] } } } as never;
+    expect(trackedAvailability(wp3, DEFAULT_PROVIDERS)).toEqual([]);
+  });
   it('ignore les chaînes vendues via Prime (Amazon Channel)', () => {
     expect(trackedAvailability(wp([{ provider_id: 9999, provider_name: 'Canal+ Amazon Channel' }]), DEFAULT_PROVIDERS)).toEqual([]);
   });
@@ -20,7 +28,8 @@ describe('disponibilité', () => {
   });
   it('revérifie après 7 jours', () => {
     const now = Date.parse('2026-11-15T00:00:00Z');
-    expect(isStale('2026-11-10T00:00:00Z', now)).toBe(false);
+    expect(isStale('2026-11-10T00:00:00Z', now)).toBe(true); // vérifié avant l'ajout d'Arte / France TV
+    expect(isStale('2026-11-22T00:00:00Z', Date.parse('2026-11-25T00:00:00Z'))).toBe(false);
     expect(isStale('2026-11-01T00:00:00Z', now)).toBe(true);
     expect(isStale(undefined, now)).toBe(true);
   });

@@ -9,6 +9,8 @@ export interface TrackedProvider {
   /** Identifiants des fournisseurs côté TMDB / JustWatch (France). Une offre « avec pub » a son propre id. */
   tmdbIds: number[];
   enabled: boolean;
+  /** Autres noms possibles chez JustWatch / TMDB. */
+  aliases?: string[];
 }
 
 export interface Settings {
@@ -24,6 +26,9 @@ export const DEFAULT_PROVIDERS: TrackedProvider[] = [
   { key: 'netflix', name: 'Netflix', tmdbIds: [8, 1796], enabled: true },
   { key: 'prime', name: 'Prime Video', tmdbIds: [119, 2100], enabled: true },
   { key: 'canal', name: 'Canal+', tmdbIds: [381], enabled: true },
+  // Plateformes gratuites (offre « free » chez JustWatch) : Arte (arte.tv) et France TV (france.tv).
+  { key: 'arte', name: 'Arte', tmdbIds: [234], enabled: true, aliases: ['arte.tv'] },
+  { key: 'francetv', name: 'France TV', tmdbIds: [236], enabled: true, aliases: ['france.tv', 'francetv', 'france tv'] },
 ];
 
 const DEFAULTS: Settings = {
@@ -42,7 +47,13 @@ function load(): Settings {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { ...DEFAULTS };
     const s = JSON.parse(raw) as Partial<Settings>;
-    return { ...DEFAULTS, ...s, providers: s.providers?.length ? s.providers : DEFAULTS.providers };
+    // Fournisseurs ajoutés dans une nouvelle version : complétés, sans toucher aux choix déjà faits.
+    const saved = s.providers?.length ? s.providers : [];
+    const providers = [
+      ...saved.map((p) => ({ ...(DEFAULT_PROVIDERS.find((d) => d.key === p.key) ?? {}), ...p })),
+      ...DEFAULT_PROVIDERS.filter((d) => !saved.some((p) => p.key === d.key)),
+    ];
+    return { ...DEFAULTS, ...s, providers };
   } catch {
     return { ...DEFAULTS };
   }

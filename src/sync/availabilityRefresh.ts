@@ -11,7 +11,7 @@ import type { Availability, Item } from '../model/types';
 // Le rafraîchissement ne change pas updatedAt : si l'autre appareil modifie la fiche en même temps
 // (notes, tags…), c'est sa modification qui gagne à la fusion, pas ce simple rafraîchissement.
 
-const MAX_PER_RUN = 40;
+const MAX_PER_RUN = 300; // ~1 minute en arrière-plan pour une grosse liste
 let ranThisSession = false;
 
 const kindOf = (i: Item) => (i.category === 'film' ? 'movie' : 'tv') as 'movie' | 'tv';

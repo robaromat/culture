@@ -238,8 +238,8 @@ export function SettingsScreen() {
               Mes abonnements
             </h2>
             <p class="lead">
-              Pour les badges et le filtre « Sur mes abonnements ». Pays : France. Seul ce qui est inclus dans l'abonnement compte (pas
-              la location, l'achat ni les chaînes vendues en supplément).
+              Pour les badges et le filtre « Sur mes abonnements ». Pays : France. Compte ce qui ne coûte rien de plus : inclus dans
+              l'abonnement, ou gratuit (Arte, France TV). Pas la location, l'achat ni les chaînes vendues en supplément.
             </p>
             {s.providers.map((p) => (
               <div class="toggle" key={p.key}>

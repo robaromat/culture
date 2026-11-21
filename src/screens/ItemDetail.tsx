@@ -108,7 +108,7 @@ export function ItemDetail({ item, tags }: { item: Item; tags: Tag[] }) {
               {item.availability.providers.length ? (
                 <>
                   <ProviderBadges item={item} />
-                  <span class="small">inclus dans l'abonnement, France</span>
+                  <span class="small">sans supplément, France</span>
                 </>
               ) : (
                 <span class="small">Pas sur tes abonnements ({trackedNames}) en France.</span>

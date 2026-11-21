@@ -129,7 +129,7 @@ export function ItemForm(props: Props) {
                 {d.availability.providers.length ? (
                   <>
                     <ProviderBadges item={d as Item} />
-                    <span class="small">inclus dans l'abonnement, France</span>
+                    <span class="small">sans supplément, France</span>
                   </>
                 ) : (
                   <span class="small">Pas sur tes abonnements en France pour l'instant.</span>
